@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="FridgeScan">
+<title>FridgeScan</title>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
+:root{--cream:#FFF8E7;--red:#E63946;--blue:#457B9D;--yellow:#F4D03F;--green:#2ECC71;--dark:#2C3E50}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#b0c4de;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,.15) 39px,rgba(255,255,255,.15) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(255,255,255,.15) 39px,rgba(255,255,255,.15) 40px);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:20px 16px 40px;font-family:'Nunito',sans-serif}
+.magnet-wrap{width:100%;max-width:390px}
+.magnet{background:var(--cream);border-radius:20px;padding:20px;box-shadow:0 2px 0 #c8b89a,0 4px 0 #b8a88a,0 6px 0 #a89878,0 8px 20px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.8);position:relative;border:3px solid #d4c4a0}
+.magnet::before{content:'';position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:64px;height:14px;background:linear-gradient(to bottom,#c0392b,#e74c3c);border-radius:8px 8px 0 0}
+.title{font-family:'Fredoka One',cursive;font-size:1.7rem;color:var(--red);text-align:center;margin-bottom:2px}
+.sub{font-size:.72rem;color:#999;text-align:center;margin-bottom:14px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px}
+.tip{background:#fff3cd;border:2px solid #ffc107;border-radius:10px;padding:9px 12px;font-size:.72rem;font-weight:600;color:#856404;margin-bottom:12px;line-height:1.5}
+#reader{width:100%;margin-bottom:14px;border-radius:14px;overflow:hidden;border:3px solid #333}
+#reader img{display:none!important}
+#reader video{border-radius:0!important}
+.scan-placeholder{background:#111;border-radius:11px;aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#888;margin-bottom:14px;border:3px solid #333}
+.scan-placeholder span{font-size:2.8rem}
+.scan-placeholder p{font-size:.8rem;font-weight:700;text-align:center;padding:0 20px;line-height:1.5}
+.btn-row{display:flex;gap:8px;margin-bottom:12px}
+.btn{flex:1;padding:13px 8px;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:0 4px 0 rgba(0,0,0,.2);-webkit-appearance:none;transition:transform .1s,box-shadow .1s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
+.btn-scan{background:var(--red);color:#fff}
+.btn-stop{background:#444;color:#fff}
+.btn-type{background:var(--blue);color:#fff}
+.manual{display:none;margin-bottom:12px;gap:8px}
+.manual.on{display:flex}
+input[type=text],input[type=date]{flex:1;padding:11px 12px;border:2.5px solid #ddd;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;background:#fff;outline:none;-webkit-appearance:none;color:#333}
+input:focus{border-color:var(--blue)}
+.go-btn{padding:11px 16px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-weight:800;font-size:.85rem;font-family:'Nunito',sans-serif;cursor:pointer;-webkit-appearance:none}
+.status{font-size:.8rem;font-weight:700;text-align:center;padding:8px 12px;border-radius:8px;margin-bottom:10px;display:none;line-height:1.4}
+.status.on{display:block}
+.status.loading{background:#e8f4fd;color:var(--blue)}
+.status.error{background:#fdecea;color:#c0392b}
+.status.success{background:#d5f5e3;color:#1e8449}
+.product-card{display:none;background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;border:2.5px solid #eee}
+.product-card.on{display:block;animation:pop .25s ease}
+@keyframes pop{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.prod-head{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.prod-img{width:58px;height:58px;border-radius:10px;background:#f5f5f5;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden}
+.prod-img img{width:100%;height:100%;object-fit:cover}
+.prod-name{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--dark);line-height:1.2}
+.prod-brand{font-size:.72rem;color:#aaa;font-weight:700;margin-top:3px}
+.prod-code{font-size:.65rem;color:#ccc;font-family:monospace;margin-top:2px}
+.manual-name{display:none;margin-bottom:10px}
+.manual-name.on{display:block}
+.manual-name label{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#e67e22;display:block;margin-bottom:5px}
+.manual-name input{width:100%}
+.exp-box{background:#fffbf0;border:2px dashed #e0d5b0;border-radius:10px;padding:10px 12px}
+.exp-lbl{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#bbb;margin-bottom:6px}
+.exp-row{display:flex;gap:8px;align-items:center}
+.save-btn{padding:11px 14px;background:var(--green);color:#fff;border:none;border-radius:10px;font-weight:800;font-size:.8rem;font-family:'Nunito',sans-serif;cursor:pointer;white-space:nowrap;-webkit-appearance:none}
+.list-hdr{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--dark);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.cpill{background:#e8e8e8;color:#777;font-size:.68rem;padding:2px 9px;border-radius:20px;font-family:'Nunito',sans-serif;font-weight:800}
+.items{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.item{background:#fff;border-radius:12px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;border:2px solid #eee;animation:pop .2s ease}
+.i-left{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.i-emoji{font-size:1.3rem;flex-shrink:0}
+.i-name{font-weight:800;font-size:.82rem;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.i-date{font-size:.68rem;color:#bbb;font-weight:600}
+.i-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:800;text-transform:uppercase}
+.good{background:#d5f5e3;color:#1e8449}
+.soon{background:#fef9c3;color:#b7950b}
+.gone{background:#fdecea;color:#c0392b}
+.del{background:none;border:none;font-size:.9rem;opacity:.35;cursor:pointer;padding:4px}
+.del:active{opacity:1}
+.empty{text-align:center;color:#ccc;font-size:.82rem;font-weight:700;padding:22px 0}
+#reader__scan_region{background:#111}
+#reader__dashboard{display:none!important}
+#reader__header_message{display:none!important}
+#reader__status_span{display:none!important}
+#reader__camera_permission_button{display:none!important}
+#reader__filescan_input{display:none!important}
+#reader__dashboard_section_swaplink{display:none!important}
+</style>
+</head>
+<body>
+<div class="magnet-wrap">
+ <div class="magnet">
+  <div class="title">🧲 FridgeScan</div>
+  <div class="sub">Barcode Expiry Tracker</div>
+  <div class="tip">📌 Scan a barcode to identify the product, then type the expiry date from the package.</div>
+  <div class="scan-placeholder" id="scanPlaceholder"><span>📷</span><p>Tap <strong>Scan Barcode</strong> to open your camera</p></div>
+  <div id="reader" style="display:none"></div>
+  <div class="btn-row">
+   <button class="btn btn-scan" id="btnScan" onclick="toggleScan()">📷 Scan Barcode</button>
+   <button class="btn btn-type" onclick="toggleManual()">⌨️ Type Code</button>
+  </div>
+  <div class="manual" id="manualRow">
+   <input type="text" id="codeInput" placeholder="Enter barcode number…" maxlength="20" inputmode="numeric">
+   <button class="go-btn" onclick="doLookup()">Go</button>
+  </div>
+  <div class="status" id="status"></div>
+  <div class="product-card" id="productCard">
+   <div class="prod-head">
+    <div class="prod-img" id="prodImg">🥫</div>
+    <div style="min-width:0">
+     <div class="prod-name" id="prodName"></div>
+     <div class="prod-brand" id="prodBrand"></div>
+     <div class="prod-code" id="prodCode"></div>
+    </div>
+   </div>
+   <div class="manual-name" id="manualNameBox">
+    <label>⚠️ Not found — type the product name</label>
+    <input type="text" id="manualNameInput" placeholder="e.g. Milk, Cheddar Cheese…">
+   </div>
+   <div class="exp-box">
+    <div class="exp-lbl">📅 Expiry date (from package)</div>
+    <div class="exp-row">
+     <input type="date" id="expDate">
+     <button class="save-btn" onclick="saveItem()">+ Save</button>
+    </div>
+   </div>
+  </div>
+  <div class="list-hdr">🧊 In the Fridge <span class="cpill" id="cnt">0</span></div>
+  <div class="items" id="itemList"></div>
+ </div>
+</div>
+<script>
+const EMOJIS=['🥫','🧀','🥩','🥛','🍎','🥦','🫙','🍕','🥚','🧁','🍞','🥗','🧆','🥜','🫐'];
+const STORE_KEY='fridgescan_v4';
+let items=[];
+try{items=JSON.parse(localStorage.getItem(STORE_KEY)||'[]');}catch(e){items=[];}
+let scanning=false,html5Qr=null,current=null;
+function rEmoji(){return EMOJIS[Math.floor(Math.random()*EMOJIS.length)]}
+function persist(){try{localStorage.setItem(STORE_KEY,JSON.stringify(items));}catch(e){}}
+function setStatus(msg,type){const s=document.getElementById('status');s.textContent=msg;s.className='status on '+type;if(type==='success')setTimeout(()=>s.classList.remove('on'),2500);}
+function clearStatus(){document.getElementById('status').classList.remove('on');}
+function toggleManual(){document.getElementById('manualRow').classList.toggle('on');setTimeout(()=>document.getElementById('codeInput').focus(),100);}
+async function toggleScan(){if(scanning){await stopScan();return;}await startScan();}
+async function startScan(){
+  try{
+    document.getElementById('scanPlaceholder').style.display='none';
+    document.getElementById('reader').style.display='block';
+    html5Qr=new Html5Qrcode('reader');
+    await html5Qr.start({facingMode:'environment'},{fps:10,qrbox:{width:250,height:180},aspectRatio:1.0,supportedScanTypes:[Html5QrcodeScanType.SCAN_TYPE_CAMERA]},(decodedText)=>{stopScan();lookupCode(decodedText);},()=>{});
+    document.getElementById('btnScan').textContent='⏹ Stop';
+    document.getElementById('btnScan').className='btn btn-stop';
+    scanning=true;
+  }catch(e){
+    document.getElementById('scanPlaceholder').style.display='flex';
+    document.getElementById('reader').style.display='none';
+    if(e.toString().includes('ermission')||e.toString().includes('NotAllowed')){setStatus('Camera denied. iPhone: Settings > Safari > Camera > Allow, then reload.','error');}
+    else{setStatus('Camera error — try Type Code instead','error');}
+  }
+}
+async function stopScan(){
+  if(html5Qr){try{await html5Qr.stop();}catch(e){}try{html5Qr.clear();}catch(e){}html5Qr=null;}
+  document.getElementById('scanPlaceholder').style.display='flex';
+  document.getElementById('reader').style.display='none';
+  document.getElementById('btnScan').innerHTML='📷 Scan Barcode';
+  document.getElementById('btnScan').className='btn btn-scan';
+  scanning=false;
+}
+function doLookup(){const v=document.getElementById('codeInput').value.trim();if(v)lookupCode(v);}
+async function lookupCode(code){
+  setStatus('🔍 Looking up product…','loading');hideCard();
+  try{
+    const res=await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
+    const data=await res.json();
+    let name='',brand='',imgUrl='',found=false;
+    if(data.status===1&&data.product){const p=data.product;name=p.product_name||p.product_name_en||'';brand=p.brands||'';imgUrl=p.image_front_small_url||p.image_url||'';found=true;clearStatus();}
+    else{setStatus('Not in database — type the product name below','error');}
+    current={code,name,brand,imgUrl,emoji:rEmoji(),found};showCard(current);
+  }catch(e){setStatus('Lookup failed — check connection','error');}
+}
+function showCard(p){
+  const img=document.getElementById('prodImg');
+  if(p.imgUrl){img.innerHTML=`<img src="${p.imgUrl}" onerror="this.parentElement.textContent='${p.emoji}'">`;}else{img.textContent=p.emoji;}
+  document.getElementById('prodName').textContent=p.found?p.name:'❓ Unknown product';
+  document.getElementById('prodBrand').textContent=p.brand;
+  document.getElementById('prodCode').textContent=p.code;
+  const manBox=document.getElementById('manualNameBox');
+  const manInput=document.getElementById('manualNameInput');
+  if(!p.found){manBox.classList.add('on');manInput.value='';setTimeout(()=>manInput.focus(),150);}
+  else{manBox.classList.remove('on');manInput.value='';}
+  const d=new Date();d.setDate(d.getDate()+7);
+  document.getElementById('expDate').value=d.toISOString().split('T')[0];
+  document.getElementById('productCard').classList.add('on');
+}
+function hideCard(){document.getElementById('productCard').classList.remove('on');}
+function saveItem(){
+  if(!current)return;
+  const exp=document.getElementById('expDate').value;
+  if(!exp){setStatus('Please enter the expiry date','error');return;}
+  let name=current.name;
+  if(!current.found){const manual=document.getElementById('manualNameInput').value.trim();if(!manual){setStatus('Please enter the product name','error');return;}name=manual;}
+  items.unshift({id:Date.now(),code:current.code,name,brand:current.brand,imgUrl:current.imgUrl,emoji:current.emoji,expDate:exp});
+  persist();renderList();hideCard();current=null;clearStatus();setStatus('✅ Saved to fridge!','success');
+}
+function deleteItem(id){items=items.filter(i=>i.id!==id);persist();renderList();}
+function daysLeft(d){const t=new Date();t.setHours(0,0,0,0);const e=new Date(d+'T00:00:00');e.setHours(0,0,0,0);return Math.round((e-t)/86400000);}
+function renderList(){
+  const el=document.getElementById('itemList');
+  document.getElementById('cnt').textContent=items.length;
+  if(!items.length){el.innerHTML='<div class="empty">Nothing here yet — scan something! 🥦</div>';return;}
+  const sorted=[...items].sort((a,b)=>new Date(a.expDate)-new Date(b.expDate));
+  el.innerHTML=sorted.map(i=>{
+    const d=daysLeft(i.expDate);
+    const cls=d<0?'gone':d<=3?'soon':'good';
+    const lbl=d<0?'⚠️ Expired':d===0?'⏰ Today!':d<=3?`⏰ ${d}d left`:`✅ ${d}d`;
+    const ds=new Date(i.expDate+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'});
+    return`<div class="item"><div class="i-left"><span class="i-emoji">${i.emoji}</span><div style="min-width:0"><div class="i-name">${i.name}</div><div class="i-date">Exp: ${ds}</div></div></div><div class="i-right"><span class="badge ${cls}">${lbl}</span><button class="del" onclick="deleteItem(${i.id})">🗑️</button></div></div>`;
+  }).join('');
+}
+document.getElementById('codeInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLookup();});
+renderList();
+</script>
+</body>
+</html>
