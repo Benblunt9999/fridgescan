@@ -10,61 +10,105 @@
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
-:root{--cream:#FFF8E7;--red:#E63946;--blue:#457B9D;--yellow:#F4D03F;--green:#2ECC71;--dark:#2C3E50;--orange:#E67E22}
+:root{--cream:#FFF8E7;--red:#E63946;--blue:#457B9D;--yellow:#F4D03F;--green:#2ECC71;--dark:#2C3E50;--orange:#E67E22;--purple:#8E44AD}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:#b0c4de;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,.15) 39px,rgba(255,255,255,.15) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(255,255,255,.15) 39px,rgba(255,255,255,.15) 40px);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:20px 16px 40px;font-family:'Nunito',sans-serif}
 .magnet-wrap{width:100%;max-width:390px}
 .magnet{background:var(--cream);border-radius:20px;padding:20px;box-shadow:0 2px 0 #c8b89a,0 4px 0 #b8a88a,0 6px 0 #a89878,0 8px 20px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.8);position:relative;border:3px solid #d4c4a0}
 .magnet::before{content:'';position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:64px;height:14px;background:linear-gradient(to bottom,#c0392b,#e74c3c);border-radius:8px 8px 0 0}
 .title{font-family:'Fredoka One',cursive;font-size:1.7rem;color:var(--red);text-align:center;margin-bottom:2px}
-.sub{font-size:.72rem;color:#999;text-align:center;margin-bottom:14px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px}
-.tip{background:#fff3cd;border:2px solid #ffc107;border-radius:10px;padding:9px 12px;font-size:.72rem;font-weight:600;color:#856404;margin-bottom:12px;line-height:1.5}
+.sub{font-size:.72rem;color:#999;text-align:center;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px}
+.recipe-link{display:block;text-align:center;background:linear-gradient(135deg,#16a085,#1abc9c);color:#fff;font-family:'Fredoka One',cursive;font-size:.9rem;padding:10px 16px;border-radius:12px;text-decoration:none;margin-bottom:14px;box-shadow:0 3px 0 #0e7a65}
+.recipe-link:active{transform:translateY(2px)}
+
+/* Add options */
+.add-label{font-size:.7rem;font-weight:800;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;display:block}
+.add-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.add-btn{border:none;border-radius:12px;padding:13px 8px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.78rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:0 4px 0 rgba(0,0,0,.2);-webkit-appearance:none;transition:transform .1s,box-shadow .1s;line-height:1.2;text-align:center}
+.add-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
+.add-btn .btn-icon{font-size:1.4rem}
+.btn-photo{background:#8E44AD;color:#fff}
+.btn-barcode{background:var(--red);color:#fff}
+.btn-type{background:var(--blue);color:#fff}
+.btn-leftover{background:var(--orange);color:#fff}
+.btn-stop{background:#444;color:#fff;grid-column:1/-1;flex-direction:row;gap:8px}
+
+/* Barcode scanner */
 #reader{width:100%;margin-bottom:14px;border-radius:14px;overflow:hidden;border:3px solid #333}
 #reader img{display:none!important}
 #reader video{border-radius:0!important}
 .scan-placeholder{background:#111;border-radius:11px;aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#888;margin-bottom:14px;border:3px solid #333}
 .scan-placeholder span{font-size:2.8rem}
-.scan-placeholder p{font-size:.8rem;font-weight:700;text-align:center;padding:0 20px;line-height:1.5}
-.btn-row{display:flex;gap:8px;margin-bottom:12px}
-.btn{flex:1;padding:13px 8px;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:0 4px 0 rgba(0,0,0,.2);-webkit-appearance:none;transition:transform .1s,box-shadow .1s}
-.btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
-.btn-scan{background:var(--red);color:#fff}
-.btn-stop{background:#444;color:#fff}
-.btn-type{background:var(--blue);color:#fff}
-.btn-leftover{background:var(--orange);color:#fff}
+.scan-placeholder p{font-size:.8rem;font-weight:700;text-align:center;padding:0 20px;line-height:1.5;color:#888}
+
+/* Manual barcode input */
 .manual{display:none;margin-bottom:12px;gap:8px}
 .manual.on{display:flex}
 input[type=text],input[type=date]{flex:1;padding:11px 12px;border:2.5px solid #ddd;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;background:#fff;outline:none;-webkit-appearance:none;color:#333}
 input:focus{border-color:var(--blue)}
 .go-btn{padding:11px 16px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-weight:800;font-size:.85rem;font-family:'Nunito',sans-serif;cursor:pointer;-webkit-appearance:none}
+
+/* Status */
 .status{font-size:.8rem;font-weight:700;text-align:center;padding:8px 12px;border-radius:8px;margin-bottom:10px;display:none;line-height:1.4}
 .status.on{display:block}
-.status.loading{background:#e8f4fd;color:var(--blue)}
+.status.loading{background:#f0e6ff;color:var(--purple)}
 .status.error{background:#fdecea;color:#c0392b}
 .status.success{background:#d5f5e3;color:#1e8449}
+.status.info{background:#e8f4fd;color:var(--blue)}
+
+/* Photo modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:flex-end;justify-content:center;padding:0}
+.modal-bg.on{display:flex}
+.modal{background:var(--cream);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;border:3px solid #d4c4a0;border-bottom:none;box-shadow:0 -8px 32px rgba(0,0,0,.3);max-height:90vh;overflow-y:auto}
+.modal-title{font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--dark);margin-bottom:4px;text-align:center}
+.modal-sub{font-size:.72rem;color:#aaa;text-align:center;margin-bottom:14px;font-weight:600}
+
+/* Photo slots */
+.photo-slots{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.photo-slot{aspect-ratio:3/4;border-radius:12px;overflow:hidden;position:relative;cursor:pointer;border:2.5px dashed #ddd;background:#f5f5f5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:border-color .2s}
+.photo-slot.filled{border-style:solid;border-color:#2ECC71}
+.photo-slot:active{opacity:.8}
+.photo-slot img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.slot-label{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#bbb;text-align:center;padding:0 4px;line-height:1.3;z-index:1}
+.slot-icon{font-size:1.4rem;z-index:1}
+.slot-overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:2}
+.slot-overlay span{font-size:1.2rem}
+.analyse-btn{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#8E44AD,#9B59B6);color:#fff;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;box-shadow:0 4px 0 #6c3483;-webkit-appearance:none;margin-bottom:8px;transition:transform .1s,box-shadow .1s}
+.analyse-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #6c3483}
+.analyse-btn:disabled{background:#ccc;box-shadow:0 4px 0 #aaa}
+.modal-cancel-btn{width:100%;padding:11px;border:2px solid #ddd;border-radius:12px;background:#fff;color:#aaa;font-family:'Nunito',sans-serif;font-weight:800;font-size:.85rem;cursor:pointer;-webkit-appearance:none}
+
+/* Product card */
 .product-card{display:none;background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;border:2.5px solid #eee}
 .product-card.on{display:block;animation:pop .25s ease}
 @keyframes pop{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
 .prod-head{display:flex;gap:12px;align-items:center;margin-bottom:12px}
 .prod-img{width:64px;height:64px;border-radius:10px;background:#f5f5f5;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden;cursor:pointer;position:relative;border:2px dashed #ddd}
 .prod-img img{width:100%;height:100%;object-fit:cover}
-.prod-img .edit-hint{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.5);color:#fff;font-size:.55rem;font-weight:800;text-align:center;padding:2px;text-transform:uppercase;letter-spacing:.5px}
-.prod-name{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--dark);line-height:1.2}
+.prod-img .edit-hint{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.5);color:#fff;font-size:.5rem;font-weight:800;text-align:center;padding:2px;text-transform:uppercase;letter-spacing:.5px}
+.prod-name-input{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--dark);line-height:1.2;border:none;background:transparent;outline:none;width:100%;padding:0}
+.prod-name-input:focus{border-bottom:2px solid var(--blue)}
 .prod-brand{font-size:.72rem;color:#aaa;font-weight:700;margin-top:3px}
 .prod-code{font-size:.65rem;color:#ccc;font-family:monospace;margin-top:2px}
-.manual-name{display:none;margin-bottom:10px}
-.manual-name.on{display:block}
-.manual-name label{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#e67e22;display:block;margin-bottom:5px}
-.manual-name input{width:100%}
+
+/* Macros preview in card */
+.macro-preview{display:none;background:#2C3E50;border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.macro-preview.on{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mp-item{text-align:center}
+.mp-val{font-family:'Fredoka One',cursive;font-size:.9rem;color:#fff}
+.mp-lbl{font-size:.58rem;color:rgba(255,255,255,.5);font-weight:800;text-transform:uppercase}
+
 .exp-box{background:#fffbf0;border:2px dashed #e0d5b0;border-radius:10px;padding:10px 12px}
 .exp-lbl{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#bbb;margin-bottom:6px}
 .exp-row{display:flex;gap:8px;align-items:center}
 .save-btn{padding:11px 14px;background:var(--green);color:#fff;border:none;border-radius:10px;font-weight:800;font-size:.8rem;font-family:'Nunito',sans-serif;cursor:pointer;white-space:nowrap;-webkit-appearance:none}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center;padding:20px}
-.modal-bg.on{display:flex}
-.modal{background:var(--cream);border-radius:20px;padding:20px;width:100%;max-width:360px;border:3px solid #d4c4a0;box-shadow:0 8px 32px rgba(0,0,0,.3)}
-.modal-title{font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--dark);margin-bottom:14px;text-align:center}
-.photo-preview{width:100%;aspect-ratio:4/3;background:#111;border-radius:12px;overflow:hidden;margin-bottom:12px;display:flex;align-items:center;justify-content:center;border:2px solid #333;cursor:pointer;position:relative}
+
+/* Leftover modal */
+.lo-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:flex-end;justify-content:center}
+.lo-modal-bg.on{display:flex}
+.lo-modal{background:var(--cream);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;border:3px solid #d4c4a0;border-bottom:none}
+.lo-modal-title{font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--dark);margin-bottom:14px;text-align:center}
+.photo-preview{width:100%;aspect-ratio:4/3;background:#111;border-radius:12px;overflow:hidden;margin-bottom:12px;display:flex;align-items:center;justify-content:center;border:2px solid #333;cursor:pointer}
 .photo-preview img{width:100%;height:100%;object-fit:cover}
 .photo-preview .ph{color:#888;font-size:.85rem;font-weight:700;text-align:center;padding:20px}
 .photo-preview .ph span{font-size:2rem;display:block;margin-bottom:6px}
@@ -75,9 +119,11 @@ input:focus{border-color:var(--blue)}
 .modal-btns button{flex:1;padding:12px;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.85rem;cursor:pointer;-webkit-appearance:none}
 .modal-save{background:var(--green);color:#fff}
 .modal-cancel{background:#eee;color:#666}
+
+/* List */
 .list-hdr{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--dark);margin-bottom:8px;display:flex;align-items:center;gap:6px}
 .cpill{background:#e8e8e8;color:#777;font-size:.68rem;padding:2px 9px;border-radius:20px;font-family:'Nunito',sans-serif;font-weight:800}
-.items{display:flex;flex-direction:column;gap:6px;-webkit-overflow-scrolling:touch}
+.items{display:flex;flex-direction:column;gap:6px}
 .item{background:#fff;border-radius:12px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;border:2px solid #eee;animation:pop .2s ease}
 .item.expiring{border-color:#ffc107}
 .item.expired{border-color:#e74c3c}
@@ -95,67 +141,126 @@ input:focus{border-color:var(--blue)}
 .del:active{opacity:1}
 .empty{text-align:center;color:#ccc;font-size:.82rem;font-weight:700;padding:22px 0}
 #reader__scan_region{background:#111}
-#reader__dashboard{display:none!important}
-#reader__header_message{display:none!important}
-#reader__status_span{display:none!important}
-#reader__camera_permission_button{display:none!important}
-#reader__filescan_input{display:none!important}
-#reader__dashboard_section_swaplink{display:none!important}
-#reader__dashboard_section_csr{display:none!important}
-#photoInput,#iconInput{display:none}
+#reader__dashboard,#reader__header_message,#reader__status_span,#reader__camera_permission_button,#reader__filescan_input,#reader__dashboard_section_swaplink,#reader__dashboard_section_csr{display:none!important}
+#photoInputs input,#iconInput,#loPhotoInput{display:none}
 </style>
 </head>
 <body>
 <div class="magnet-wrap">
  <div class="magnet">
   <div class="title">🧲 FridgeScan</div>
-  <div class="sub">Barcode Expiry Tracker</div>
-  <div class="tip">📌 Scan a barcode or add a leftover with a photo. Tap any icon in the list to change it.</div>
-  <div class="scan-placeholder" id="scanPlaceholder"><span>📷</span><p>Tap <strong>Scan</strong> to start</p></div>
-  <div id="reader" style="display:none"></div>
-  <div class="btn-row">
-   <button class="btn btn-scan" id="btnScan" onclick="toggleScan()">📷 Scan</button>
-   <button class="btn btn-type" onclick="toggleManual()">⌨️ Type</button>
-   <button class="btn btn-leftover" onclick="openLeftover()">🍲 Leftover</button>
+  <div class="sub">Barcode & Photo Tracker</div>
+
+  <!-- Recipe link -->
+  <a class="recipe-link" href="recipes.html">🍳 What can I cook? → FridgeRecipes</a>
+
+  <!-- Add options -->
+  <span class="add-label">Add to fridge</span>
+  <div class="add-grid" id="addGrid">
+   <button class="add-btn btn-photo" onclick="openPhotoModal()">
+    <span class="btn-icon">📸</span>
+    <span>Photo Scan</span>
+    <span style="font-size:.62rem;opacity:.8">Up to 3 photos</span>
+   </button>
+   <button class="add-btn btn-leftover" onclick="openLeftover()">
+    <span class="btn-icon">🍲</span>
+    <span>Add Leftover</span>
+    <span style="font-size:.62rem;opacity:.8">Name + photo</span>
+   </button>
+   <button class="add-btn btn-barcode" id="btnScan" onclick="toggleScan()">
+    <span class="btn-icon">📷</span>
+    <span>Scan Barcode</span>
+    <span style="font-size:.62rem;opacity:.8">Camera scanner</span>
+   </button>
+   <button class="add-btn btn-type" onclick="toggleManual()">
+    <span class="btn-icon">⌨️</span>
+    <span>Type Barcode</span>
+    <span style="font-size:.62rem;opacity:.8">Enter number</span>
+   </button>
   </div>
+
+  <!-- Barcode scanner -->
+  <div class="scan-placeholder" id="scanPlaceholder" style="display:none"><span>📷</span><p>Point at barcode to scan</p></div>
+  <div id="reader" style="display:none"></div>
+
+  <!-- Manual barcode input -->
   <div class="manual" id="manualRow">
    <input type="text" id="codeInput" placeholder="Enter barcode number…" maxlength="20" inputmode="numeric">
    <button class="go-btn" onclick="doLookup()">Go</button>
   </div>
+
   <div class="status" id="status"></div>
+
+  <!-- Product card (shared for barcode + photo results) -->
   <div class="product-card" id="productCard">
    <div class="prod-head">
-    <div class="prod-img" id="prodImg" onclick="triggerIconChange('new')" title="Tap to change icon">
+    <div class="prod-img" id="prodImg" onclick="triggerIconChange('new')">
      <span id="prodEmoji">🥫</span>
-     <div class="edit-hint">tap to change</div>
+     <div class="edit-hint">change</div>
     </div>
-    <div style="min-width:0">
-     <div class="prod-name" id="prodName"></div>
+    <div style="min-width:0;flex:1">
+     <input class="prod-name-input" id="prodNameInput" placeholder="Product name…">
      <div class="prod-brand" id="prodBrand"></div>
      <div class="prod-code" id="prodCode"></div>
     </div>
    </div>
-   <div class="manual-name" id="manualNameBox">
-    <label>⚠️ Not found — type the product name</label>
-    <input type="text" id="manualNameInput" placeholder="e.g. Milk, Cheddar Cheese…">
+   <!-- Macros from AI/barcode -->
+   <div class="macro-preview" id="macroPreview">
+    <div class="mp-item"><div class="mp-val" id="mCal">-</div><div class="mp-lbl">kcal</div></div>
+    <div class="mp-item"><div class="mp-val" id="mPro">-</div><div class="mp-lbl">protein</div></div>
+    <div class="mp-item"><div class="mp-val" id="mCarb">-</div><div class="mp-lbl">carbs</div></div>
+    <div class="mp-item"><div class="mp-val" id="mFat">-</div><div class="mp-lbl">fat</div></div>
    </div>
    <div class="exp-box">
-    <div class="exp-lbl">📅 Expiry date (from package)</div>
+    <div class="exp-lbl">📅 Expiry date</div>
     <div class="exp-row">
      <input type="date" id="expDate">
      <button class="save-btn" onclick="saveItem()">+ Save</button>
     </div>
    </div>
   </div>
+
+  <!-- List -->
   <div class="list-hdr">🧊 In the Fridge <span class="cpill" id="cnt">0</span></div>
   <div class="items" id="itemList"></div>
  </div>
 </div>
-<div class="modal-bg" id="leftoverModal">
+
+<!-- Photo scan modal -->
+<div class="modal-bg" id="photoModal">
  <div class="modal">
-  <div class="modal-title">🍲 Add Leftover</div>
-  <div class="photo-preview" id="photoPreview" onclick="triggerPhoto()">
-   <div class="ph"><span>📸</span>Tap to take a photo</div>
+  <div class="modal-title">📸 Photo Scan</div>
+  <div class="modal-sub">Take up to 3 photos — Claude identifies the product, reads the expiry date, and extracts macros</div>
+
+  <div class="photo-slots">
+   <!-- Slot 1: product -->
+   <div class="photo-slot" id="slot0" onclick="triggerSlotPhoto(0)">
+    <span class="slot-icon">📦</span>
+    <span class="slot-label">Product front</span>
+   </div>
+   <!-- Slot 2: expiry -->
+   <div class="photo-slot" id="slot1" onclick="triggerSlotPhoto(1)">
+    <span class="slot-icon">📅</span>
+    <span class="slot-label">Expiry date label</span>
+   </div>
+   <!-- Slot 3: nutrition -->
+   <div class="photo-slot" id="slot2" onclick="triggerSlotPhoto(2)">
+    <span class="slot-icon">📊</span>
+    <span class="slot-label">Nutrition label</span>
+   </div>
+  </div>
+
+  <button class="analyse-btn" id="analyseBtn" onclick="analysePhotos()" disabled>🔍 Analyse Photos</button>
+  <button class="modal-cancel-btn" onclick="closePhotoModal()">Cancel</button>
+ </div>
+</div>
+
+<!-- Leftover modal -->
+<div class="lo-modal-bg" id="leftoverModal">
+ <div class="lo-modal">
+  <div class="lo-modal-title">🍲 Add Leftover</div>
+  <div class="photo-preview" id="loPhotoPreview" onclick="triggerLoPhoto()">
+   <div class="ph"><span>📸</span>Tap to take a photo (optional)</div>
   </div>
   <div class="modal-field">
    <label>Name (e.g. Mum's Spaghetti Bol)</label>
@@ -171,108 +276,292 @@ input:focus{border-color:var(--blue)}
   </div>
  </div>
 </div>
-<input type="file" id="photoInput" accept="image/*" capture="environment">
+
+<!-- Hidden file inputs -->
+<div id="photoInputs">
+ <input type="file" id="photoInput0" accept="image/*" capture="environment">
+ <input type="file" id="photoInput1" accept="image/*" capture="environment">
+ <input type="file" id="photoInput2" accept="image/*" capture="environment">
+</div>
 <input type="file" id="iconInput" accept="image/*">
+<input type="file" id="loPhotoInput" accept="image/*" capture="environment">
+
 <script>
-const CATEGORY_EMOJI={'milk':'🥛','cheese':'🧀','butter':'🧈','yogurt':'🍦','cream':'🍦','chicken':'🍗','beef':'🥩','pork':'🥩','meat':'🥩','fish':'🐟','salmon':'🐟','tuna':'🐟','bread':'🍞','cake':'🧁','biscuit':'🍪','cookie':'🍪','pastry':'🥐','muffin':'🧁','apple':'🍎','banana':'🍌','orange':'🍊','lemon':'🍋','berry':'🍓','grape':'🍇','fruit':'🍎','carrot':'🥕','broccoli':'🥦','lettuce':'🥬','tomato':'🍅','potato':'🥔','onion':'🧅','veg':'🥦','pasta':'🍝','rice':'🍚','soup':'🍲','sauce':'🥫','jam':'🫙','honey':'🍯','juice':'🧃','water':'💧','beer':'🍺','wine':'🍷','cola':'🥤','coke':'🥤','pepsi':'🥤','drink':'🥤','egg':'🥚','bacon':'🥓','sausage':'🌭','ham':'🍖','chocolate':'🍫','sweet':'🍬','candy':'🍬','coffee':'☕','tea':'🍵','pizza':'🍕','burger':'🍔','sandwich':'🥪','salad':'🥗','nuts':'🥜','default':'🥫'};
-function smartEmoji(name,categories){const n=(name||'').toLowerCase();const c=(categories||[]).join(' ').toLowerCase();const combined=n+' '+c;for(const[key,emoji] of Object.entries(CATEGORY_EMOJI)){if(combined.includes(key))return emoji;}return CATEGORY_EMOJI.default;}
+// ---- EMOJI MAP ----
+const CATEGORY_EMOJI={milk:'🥛',cheese:'🧀',butter:'🧈',yogurt:'🍦',cream:'🍦',chicken:'🍗',beef:'🥩',pork:'🥩',meat:'🥩',fish:'🐟',salmon:'🐟',tuna:'🐟',bread:'🍞',cake:'🧁',biscuit:'🍪',cookie:'🍪',pastry:'🥐',apple:'🍎',banana:'🍌',orange:'🍊',berry:'🍓',fruit:'🍎',carrot:'🥕',broccoli:'🥦',lettuce:'🥬',tomato:'🍅',potato:'🥔',onion:'🧅',pasta:'🍝',rice:'🍚',soup:'🍲',sauce:'🥫',jam:'🫙',honey:'🍯',juice:'🧃',water:'💧',beer:'🍺',wine:'🍷',cola:'🥤',coke:'🥤',pepsi:'🥤',drink:'🥤',egg:'🥚',bacon:'🥓',sausage:'🌭',ham:'🍖',chocolate:'🍫',sweet:'🍬',coffee:'☕',tea:'🍵',pizza:'🍕',burger:'🍔',sandwich:'🥪',salad:'🥗',nuts:'🥜',default:'🥫'};
+function smartEmoji(name){const n=(name||'').toLowerCase();for(const[k,e] of Object.entries(CATEGORY_EMOJI)){if(n.includes(k))return e;}return CATEGORY_EMOJI.default;}
+
 const STORE_KEY='fridgescan_v5';
-let items=[];try{items=JSON.parse(localStorage.getItem(STORE_KEY)||'[]');}catch(e){items=[];}
-let scanning=false,html5Qr=null,current=null,editingId=null,newItemPhoto=null;
+let items=[];
+try{items=JSON.parse(localStorage.getItem(STORE_KEY)||'[]');}catch(e){items=[];}
+let scanning=false,html5Qr=null,current=null,editingId=null,loPhoto=null;
+let slotPhotos=[null,null,null]; // base64 for each slot
+
 function persist(){try{localStorage.setItem(STORE_KEY,JSON.stringify(items));}catch(e){}}
-function setStatus(msg,type){const s=document.getElementById('status');s.textContent=msg;s.className='status on '+type;if(type==='success')setTimeout(()=>s.classList.remove('on'),2500);}
+function setStatus(msg,type){const s=document.getElementById('status');s.textContent=msg;s.className='status on '+type;}
 function clearStatus(){document.getElementById('status').classList.remove('on');}
+
+// ---- PHOTO MODAL ----
+function openPhotoModal(){
+  slotPhotos=[null,null,null];
+  [0,1,2].forEach(i=>{
+    const slot=document.getElementById('slot'+i);
+    const icons=['📦','📅','📊'];
+    const labels=['Product front','Expiry date label','Nutrition label'];
+    slot.innerHTML=`<span class="slot-icon">${icons[i]}</span><span class="slot-label">${labels[i]}</span>`;
+    slot.classList.remove('filled');
+  });
+  document.getElementById('analyseBtn').disabled=true;
+  document.getElementById('photoModal').classList.add('on');
+}
+function closePhotoModal(){document.getElementById('photoModal').classList.remove('on');}
+
+function triggerSlotPhoto(idx){document.getElementById('photoInput'+idx).click();}
+
+[0,1,2].forEach(idx=>{
+  document.getElementById('photoInput'+idx).addEventListener('change',function(){
+    const file=this.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      slotPhotos[idx]=e.target.result;
+      const slot=document.getElementById('slot'+idx);
+      slot.innerHTML=`<img src="${e.target.result}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><div class="slot-overlay"><span>✅</span></div>`;
+      slot.classList.add('filled');
+      // Enable analyse if at least 1 photo
+      document.getElementById('analyseBtn').disabled=!slotPhotos.some(p=>p);
+    };
+    reader.readAsDataURL(file);
+    this.value='';
+  });
+});
+
+async function analysePhotos(){
+  const photos=slotPhotos.filter(p=>p);
+  if(!photos.length)return;
+
+  document.getElementById('analyseBtn').disabled=true;
+  document.getElementById('analyseBtn').textContent='🔍 Analysing…';
+  setStatus('🤖 Claude is reading your photos…','loading');
+
+  try{
+    // Build content array with all photos
+    const content=[];
+    const photoLabels=['This is the product front/packaging.','This is the expiry date label.','This is the nutrition/ingredients label.'];
+    slotPhotos.forEach((p,i)=>{
+      if(!p)return;
+      const base64=p.split(',')[1];
+      const mtype=p.startsWith('data:image/png')?'image/png':'image/jpeg';
+      content.push({type:'image',source:{type:'base64',media_type:mtype,data:base64}});
+      content.push({type:'text',text:photoLabels[i]});
+    });
+
+    content.push({type:'text',text:`Analyse these food product photos and respond ONLY with valid JSON (no markdown, no explanation):
+{
+  "name": "product name",
+  "brand": "brand name or empty string",
+  "emoji": "single most appropriate food emoji",
+  "expiry": "YYYY-MM-DD if visible in photos, else null",
+  "macros": {
+    "calories": number per 100g or null,
+    "protein": number per 100g or null,
+    "carbs": number per 100g or null,
+    "fat": number per 100g or null
+  },
+  "confidence": "high|medium|low"
+}`});
+
+    const response=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:500,
+        messages:[{role:'user',content}]
+      })
+    });
+
+    const data=await response.json();
+    let text='';
+    if(data.content&&data.content[0]){text=data.content[0].text||'';}
+    else if(data.error){throw new Error(data.error.message);}
+
+    const clean=text.replace(/```json|```/g,'').trim();
+    const result=JSON.parse(clean);
+
+    closePhotoModal();
+
+    // Fill product card
+    current={
+      code:'',
+      name:result.name||'',
+      brand:result.brand||'',
+      imgUrl:'',
+      emoji:result.emoji||smartEmoji(result.name||''),
+      photo:slotPhotos[0]||null,
+      found:true,
+      macros:result.macros||null
+    };
+
+    showCard(current, result.expiry);
+    clearStatus();
+
+  }catch(e){
+    setStatus('Analysis failed: '+e.message+' — try again or use barcode','error');
+    document.getElementById('analyseBtn').disabled=false;
+    document.getElementById('analyseBtn').textContent='🔍 Analyse Photos';
+  }
+}
+
+// ---- BARCODE SCANNER ----
 function toggleManual(){document.getElementById('manualRow').classList.toggle('on');setTimeout(()=>document.getElementById('codeInput').focus(),100);}
-async function toggleScan(){if(scanning){await stopScan();return;}await startScan();}
+
+async function toggleScan(){
+  if(scanning){await stopScan();return;}
+  await startScan();
+}
+
 async function startScan(){
   try{
-    document.getElementById('scanPlaceholder').style.display='none';
+    document.getElementById('scanPlaceholder').style.display='flex';
     document.getElementById('reader').style.display='block';
     html5Qr=new Html5Qrcode('reader');
     await html5Qr.start({facingMode:'environment'},{fps:15,qrbox:{width:280,height:160},aspectRatio:1.333,supportedScanTypes:[Html5QrcodeScanType.SCAN_TYPE_CAMERA]},(code)=>{stopScan();lookupCode(code);},()=>{});
-    document.getElementById('btnScan').textContent='⏹ Stop';
-    document.getElementById('btnScan').className='btn btn-stop';
+    document.getElementById('btnScan').innerHTML='<span class="btn-icon">⏹</span><span>Stop Scan</span>';
+    document.getElementById('btnScan').className='add-btn btn-stop';
     scanning=true;
   }catch(e){
-    document.getElementById('scanPlaceholder').style.display='flex';
+    document.getElementById('scanPlaceholder').style.display='none';
     document.getElementById('reader').style.display='none';
     if(e.toString().includes('ermission')||e.toString().includes('NotAllowed')){setStatus('Camera denied. Settings > Safari > Camera > Allow, then reload.','error');}
-    else{setStatus('Camera unavailable — use Type instead: '+e,'error');}
+    else{setStatus('Camera error — try Type Barcode instead','error');}
   }
 }
+
 async function stopScan(){
   if(html5Qr){try{await html5Qr.stop();}catch(e){}try{html5Qr.clear();}catch(e){}html5Qr=null;}
-  document.getElementById('scanPlaceholder').style.display='flex';
+  document.getElementById('scanPlaceholder').style.display='none';
   document.getElementById('reader').style.display='none';
-  document.getElementById('btnScan').innerHTML='📷 Scan';
-  document.getElementById('btnScan').className='btn btn-scan';
+  document.getElementById('btnScan').innerHTML='<span class="btn-icon">📷</span><span>Scan Barcode</span><span style="font-size:.62rem;opacity:.8">Camera scanner</span>';
+  document.getElementById('btnScan').className='add-btn btn-barcode';
   scanning=false;
 }
+
 function doLookup(){const v=document.getElementById('codeInput').value.trim();if(v)lookupCode(v);}
+
 async function lookupCode(code){
-  setStatus('🔍 Looking up product…','loading');hideCard();
+  setStatus('🔍 Looking up barcode…','info');
+  hideCard();
   try{
     const res=await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
     const data=await res.json();
-    let name='',brand='',imgUrl='',found=false,categories=[];
-    if(data.status===1&&data.product){const p=data.product;name=p.product_name||p.product_name_en||'';brand=p.brands||'';imgUrl=p.image_front_small_url||p.image_url||'';categories=p.categories_tags||[];found=true;clearStatus();}
-    else{setStatus('Not in database — type the product name below','error');}
-    const emoji=smartEmoji(name,categories);
-    current={code,name,brand,imgUrl,emoji,found,photo:null};
-    showCard(current);
+    let name='',brand='',imgUrl='',found=false,macros=null,categories=[];
+    if(data.status===1&&data.product){
+      const p=data.product;
+      name=p.product_name||p.product_name_en||'';
+      brand=p.brands||'';
+      imgUrl=p.image_front_small_url||p.image_url||'';
+      categories=p.categories_tags||[];
+      // Extract macros per 100g
+      const n=p.nutriments||{};
+      if(n['energy-kcal_100g']||n.proteins_100g){
+        macros={
+          calories:Math.round(n['energy-kcal_100g']||0)||null,
+          protein:Math.round(n.proteins_100g||0)||null,
+          carbs:Math.round(n.carbohydrates_100g||0)||null,
+          fat:Math.round(n.fat_100g||0)||null
+        };
+      }
+      found=true;
+      clearStatus();
+    }else{
+      setStatus('Not in database — try Photo Scan or type the name','error');
+      name='Unknown product';
+    }
+    const emoji=smartEmoji(name+' '+categories.join(' '));
+    current={code,name,brand,imgUrl,emoji,photo:null,found,macros};
+    showCard(current,null);
   }catch(e){setStatus('Lookup failed — check connection','error');}
 }
-function showCard(p){
+
+function showCard(p, detectedExpiry){
   const imgBox=document.getElementById('prodImg');
-  if(p.photo){imgBox.innerHTML=`<img src="${p.photo}"><div class="edit-hint">tap to change</div>`;}
-  else if(p.imgUrl){imgBox.innerHTML=`<img src="${p.imgUrl}" onerror="this.parentElement.innerHTML='<span>${p.emoji}</span><div class=\\'edit-hint\\'>tap to change</div>'"><div class="edit-hint">tap to change</div>`;}
-  else{imgBox.innerHTML=`<span>${p.emoji}</span><div class="edit-hint">tap to change</div>`;}
-  document.getElementById('prodName').textContent=p.found?p.name:'❓ Unknown product';
-  document.getElementById('prodBrand').textContent=p.brand;
-  document.getElementById('prodCode').textContent=p.code;
-  const manBox=document.getElementById('manualNameBox');
-  const manInput=document.getElementById('manualNameInput');
-  if(!p.found){manBox.classList.add('on');manInput.value='';setTimeout(()=>manInput.focus(),150);}
-  else{manBox.classList.remove('on');manInput.value='';}
-  const d=new Date();d.setDate(d.getDate()+7);
-  document.getElementById('expDate').value=d.toISOString().split('T')[0];
+  if(p.photo){imgBox.innerHTML=`<img src="${p.photo}"><div class="edit-hint">change</div>`;}
+  else if(p.imgUrl){imgBox.innerHTML=`<img src="${p.imgUrl}" onerror="this.parentElement.innerHTML='<span>${p.emoji}</span><div class=\\'edit-hint\\'>change</div>'"><div class="edit-hint">change</div>`;}
+  else{imgBox.innerHTML=`<span>${p.emoji}</span><div class="edit-hint">change</div>`;}
+
+  document.getElementById('prodNameInput').value=p.name||'';
+  document.getElementById('prodBrand').textContent=p.brand||'';
+  document.getElementById('prodCode').textContent=p.code||'';
+
+  // Macros
+  const mp=document.getElementById('macroPreview');
+  if(p.macros&&(p.macros.calories||p.macros.protein)){
+    document.getElementById('mCal').textContent=p.macros.calories||'?';
+    document.getElementById('mPro').textContent=(p.macros.protein||'?')+'g';
+    document.getElementById('mCarb').textContent=(p.macros.carbs||'?')+'g';
+    document.getElementById('mFat').textContent=(p.macros.fat||'?')+'g';
+    mp.classList.add('on');
+  }else{mp.classList.remove('on');}
+
+  // Set expiry — use detected date or default +7 days
+  if(detectedExpiry){
+    document.getElementById('expDate').value=detectedExpiry;
+  }else{
+    const d=new Date();d.setDate(d.getDate()+7);
+    document.getElementById('expDate').value=d.toISOString().split('T')[0];
+  }
   document.getElementById('productCard').classList.add('on');
 }
-function hideCard(){document.getElementById('productCard').classList.remove('on');}
+
+function hideCard(){document.getElementById('productCard').classList.remove('on');document.getElementById('macroPreview').classList.remove('on');}
+
+// Icon change for card
 function triggerIconChange(id){editingId=id;document.getElementById('iconInput').click();}
 document.getElementById('iconInput').addEventListener('change',function(){
   const file=this.files[0];if(!file)return;
   const reader=new FileReader();
-  reader.onload=function(e){
-    const dataUrl=e.target.result;
-    if(editingId==='new'){if(current)current.photo=dataUrl;const imgBox=document.getElementById('prodImg');imgBox.innerHTML=`<img src="${dataUrl}"><div class="edit-hint">tap to change</div>`;}
-    else{const item=items.find(i=>i.id===editingId);if(item){item.photo=dataUrl;persist();renderList();}}
+  reader.onload=e=>{
+    const url=e.target.result;
+    if(editingId==='new'){
+      if(current)current.photo=url;
+      document.getElementById('prodImg').innerHTML=`<img src="${url}"><div class="edit-hint">change</div>`;
+    }else{
+      const item=items.find(i=>i.id===editingId);
+      if(item){item.photo=url;persist();renderList();}
+    }
   };
   reader.readAsDataURL(file);this.value='';
 });
+
 function saveItem(){
   if(!current)return;
   const exp=document.getElementById('expDate').value;
   if(!exp){setStatus('Please enter the expiry date','error');return;}
-  let name=current.name;
-  if(!current.found){const manual=document.getElementById('manualNameInput').value.trim();if(!manual){setStatus('Please enter the product name','error');return;}name=manual;}
-  items.unshift({id:Date.now(),code:current.code,name,brand:current.brand,imgUrl:current.imgUrl,emoji:current.emoji,photo:current.photo||null,expDate:exp,type:'barcode'});
-  persist();renderList();hideCard();current=null;clearStatus();setStatus('✅ Saved to fridge!','success');
+  const name=document.getElementById('prodNameInput').value.trim()||current.name||'Unknown';
+  items.unshift({
+    id:Date.now(),code:current.code||'',name,brand:current.brand,
+    imgUrl:current.imgUrl,emoji:current.emoji,photo:current.photo||null,
+    expDate:exp,type:'product',macros:current.macros||null
+  });
+  persist();renderList();hideCard();current=null;clearStatus();
+  setStatus('✅ Saved to fridge!','success');
 }
+
+// ---- LEFTOVER ----
 function openLeftover(){
-  newItemPhoto=null;
+  loPhoto=null;
   document.getElementById('leftoverName').value='';
   const d=new Date();d.setDate(d.getDate()+3);
   document.getElementById('leftoverDate').value=d.toISOString().split('T')[0];
-  document.getElementById('photoPreview').innerHTML='<div class="ph"><span>📸</span>Tap to take a photo</div>';
+  document.getElementById('loPhotoPreview').innerHTML='<div class="ph"><span>📸</span>Tap to take a photo (optional)</div>';
   document.getElementById('leftoverModal').classList.add('on');
 }
 function closeLeftover(){document.getElementById('leftoverModal').classList.remove('on');}
-function triggerPhoto(){document.getElementById('photoInput').click();}
-document.getElementById('photoInput').addEventListener('change',function(){
+function triggerLoPhoto(){document.getElementById('loPhotoInput').click();}
+document.getElementById('loPhotoInput').addEventListener('change',function(){
   const file=this.files[0];if(!file)return;
   const reader=new FileReader();
-  reader.onload=function(e){newItemPhoto=e.target.result;document.getElementById('photoPreview').innerHTML=`<img src="${newItemPhoto}" style="width:100%;height:100%;object-fit:cover">`;};
+  reader.onload=e=>{loPhoto=e.target.result;document.getElementById('loPhotoPreview').innerHTML=`<img src="${loPhoto}" style="width:100%;height:100%;object-fit:cover">`;};
   reader.readAsDataURL(file);this.value='';
 });
 function saveLeftover(){
@@ -280,15 +569,20 @@ function saveLeftover(){
   const exp=document.getElementById('leftoverDate').value;
   if(!name){document.getElementById('leftoverName').focus();return;}
   if(!exp){document.getElementById('leftoverDate').focus();return;}
-  items.unshift({id:Date.now(),code:'',name,brand:'Leftover',imgUrl:'',emoji:'🍲',photo:newItemPhoto||null,expDate:exp,type:'leftover'});
+  items.unshift({id:Date.now(),code:'',name,brand:'Leftover',imgUrl:'',emoji:'🍲',photo:loPhoto||null,expDate:exp,type:'leftover',macros:null});
   persist();renderList();closeLeftover();setStatus('🍲 Leftover saved!','success');
 }
+
+// ---- DELETE ----
 function deleteItem(id){items=items.filter(i=>i.id!==id);persist();renderList();}
+
+// ---- RENDER LIST ----
 function daysLeft(d){const t=new Date();t.setHours(0,0,0,0);const e=new Date(d+'T00:00:00');e.setHours(0,0,0,0);return Math.round((e-t)/86400000);}
+
 function renderList(){
   const el=document.getElementById('itemList');
   document.getElementById('cnt').textContent=items.length;
-  if(!items.length){el.innerHTML='<div class="empty">Nothing here yet — scan something! 🥦</div>';return;}
+  if(!items.length){el.innerHTML='<div class="empty">Nothing here yet — add something! 🥦</div>';return;}
   const sorted=[...items].sort((a,b)=>new Date(a.expDate)-new Date(b.expDate));
   el.innerHTML=sorted.map(i=>{
     const d=daysLeft(i.expDate);
@@ -300,9 +594,23 @@ function renderList(){
     if(i.photo){iconHtml=`<img src="${i.photo}">`;}
     else if(i.imgUrl){iconHtml=`<img src="${i.imgUrl}" onerror="this.parentElement.textContent='${i.emoji}'">`;}
     else{iconHtml=i.emoji;}
-    return`<div class="item ${borderCls}"><div class="i-left"><div class="i-icon" onclick="triggerIconChange(${i.id})">${iconHtml}</div><div style="min-width:0"><div class="i-name">${i.name}</div><div class="i-date">Exp: ${ds}${i.type==='leftover'?' 🍲':''}</div></div></div><div class="i-right"><span class="badge ${cls}">${lbl}</span><button class="del" onclick="deleteItem(${i.id})">🗑️</button></div></div>`;
+    const macroHint=i.macros&&i.macros.calories?`<span style="font-size:.6rem;color:#8E44AD;font-weight:800"> · ${i.macros.calories}kcal/100g</span>`:'';
+    return`<div class="item ${borderCls}">
+      <div class="i-left">
+        <div class="i-icon" onclick="triggerIconChange(${i.id})">${iconHtml}</div>
+        <div style="min-width:0">
+          <div class="i-name">${i.name}</div>
+          <div class="i-date">Exp: ${ds}${i.type==='leftover'?' 🍲':''}${macroHint}</div>
+        </div>
+      </div>
+      <div class="i-right">
+        <span class="badge ${cls}">${lbl}</span>
+        <button class="del" onclick="deleteItem(${i.id})">🗑️</button>
+      </div>
+    </div>`;
   }).join('');
 }
+
 document.getElementById('codeInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLookup();});
 renderList();
 </script>
